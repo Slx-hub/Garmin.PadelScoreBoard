@@ -1,6 +1,7 @@
 import Toybox.Lang;
 import Toybox.System;
 import Toybox.WatchUi;
+import Toybox.Application;
 
 class PadelScoreBoardMenuDelegate extends WatchUi.MenuInputDelegate {
 
@@ -9,10 +10,12 @@ class PadelScoreBoardMenuDelegate extends WatchUi.MenuInputDelegate {
     }
 
     function onMenuItem(item as Symbol) as Void {
-        if (item == :item_1) {
-            System.println("item 1");
-        } else if (item == :item_2) {
-            System.println("item 2");
+        if (item == :reset_score) {
+            System.println("Reset Score");
+            var app = Application.getApp() as PadelScoreBoardApp;
+            var delegate = app.getDelegate() as PadelScoreBoardDelegate;
+            delegate.getGameState().reset();
+            WatchUi.requestUpdate();
         }
     }
 

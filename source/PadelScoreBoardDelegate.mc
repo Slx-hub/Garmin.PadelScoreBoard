@@ -1,10 +1,18 @@
 import Toybox.Lang;
 import Toybox.WatchUi;
+import Toybox.System;
 
 class PadelScoreBoardDelegate extends WatchUi.BehaviorDelegate {
+    
+    private var gameState as GameState;
 
     function initialize() {
         BehaviorDelegate.initialize();
+        gameState = new GameState();
+    }
+    
+    function getGameState() as GameState {
+        return gameState;
     }
 
     function onMenu() as Boolean {
@@ -27,15 +35,15 @@ class PadelScoreBoardDelegate extends WatchUi.BehaviorDelegate {
     }
 
     function onSelect() as Boolean {
-        System.println("Button pressed: SET");
-        PadelScoreBoardView.lastButtonName = "SET";
+        System.println("Button pressed: SET - Top team scores");
+        gameState.addPointTopTeam();
         WatchUi.requestUpdate();
         return true;
     }
 
     function onBack() as Boolean {
-        System.println("Button pressed: BACK");
-        PadelScoreBoardView.lastButtonName = "BACK";
+        System.println("Button pressed: BACK - Bottom team scores");
+        gameState.addPointBottomTeam();
         WatchUi.requestUpdate();
         return true;
     }

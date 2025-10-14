@@ -4,8 +4,11 @@ import Toybox.WatchUi;
 
 class PadelScoreBoardApp extends Application.AppBase {
 
+    private var delegate as PadelScoreBoardDelegate;
+
     function initialize() {
         AppBase.initialize();
+        delegate = new PadelScoreBoardDelegate();
     }
 
     // onStart() is called on application start up
@@ -18,7 +21,11 @@ class PadelScoreBoardApp extends Application.AppBase {
 
     // Return the initial view of your application here
     function getInitialView() as [Views] or [Views, InputDelegates] {
-        return [ new PadelScoreBoardView(), new PadelScoreBoardDelegate() ];
+        return [ new PadelScoreBoardView(), delegate ];
+    }
+    
+    function getDelegate() as PadelScoreBoardDelegate {
+        return delegate;
     }
 
 }
