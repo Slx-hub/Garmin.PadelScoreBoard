@@ -2,4 +2,5 @@
     <string id="AppName">PadelScoreBoard</string>
 
     <string id="reset_score_label">Reset Score</string>
+    <string id="exit_label">Exit App</string>
 </strings>

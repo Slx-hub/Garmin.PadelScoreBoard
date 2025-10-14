@@ -85,7 +85,7 @@ class GameState {
             playerPositions[2] = playerPositions[3];
             playerPositions[3] = temp;
         }
-        Attention.playTone(Attention.TONE_ALERT_HI);
+        Attention.playTone({:toneProfile=>PLAYER_SWAP_SOUND});
     }
     
     // Switch serve to the other team
@@ -110,7 +110,7 @@ class GameState {
         }
         lastServer = tempserver;
         if (!silent) {
-            Attention.playTone(Attention.TONE_ALERT_LO);
+            Attention.playTone({:toneProfile=>TEAM_SWAP_SOUND});
         }
     }
     
@@ -134,11 +134,7 @@ class GameState {
             bottomTeamGames = bottomTeamGames + 1;
             System.println("Bottom team wins game! Games: " + bottomTeamGames);
             lastScoreMessage = "T1 Won";
-            checkSetWin();
-            bottomTeamScore = 0;
-            topTeamScore = 0;
-            switchServingTeam(true);
-            Attention.playTone(Attention.TONE_SUCCESS);
+            teamWinsGame();
             return;
         } else {
             bottomTeamScore = bottomTeamScore + 1;
@@ -172,11 +168,7 @@ class GameState {
             topTeamGames = topTeamGames + 1;
             System.println("Top team wins game! Games: " + topTeamGames);
             lastScoreMessage = "T2 Won";
-            checkSetWin();
-            bottomTeamScore = 0;
-            topTeamScore = 0;
-            switchServingTeam(true);
-            Attention.playTone(Attention.TONE_SUCCESS);
+            teamWinsGame();
             return;
         } else {
             topTeamScore = topTeamScore + 1;
@@ -188,6 +180,14 @@ class GameState {
         } else {
             switchServingTeam(false);
         }
+    }
+
+    function teamWinsGame() as Void{
+        checkSetWin();
+        bottomTeamScore = 0;
+        topTeamScore = 0;
+        switchServingTeam(true);
+        Attention.playTone({:toneProfile=>TEAM_WIN_SOUND});
     }
     
     // Check if a team has won the set

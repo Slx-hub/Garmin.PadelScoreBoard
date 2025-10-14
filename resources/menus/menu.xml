@@ -1,3 +1,4 @@
 <menu id="MainMenu" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://developer.garmin.com/downloads/connect-iq/resources.xsd">
     <menu-item id="reset_score" label="@Strings.reset_score_label" />
+    <menu-item id="exit_app" label="@Strings.exit_label" />
 </menu>

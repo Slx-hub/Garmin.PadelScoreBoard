@@ -1,6 +1,9 @@
 import Toybox.Graphics;
 import Toybox.WatchUi;
 import Toybox.Application;
+import Toybox.System;
+import Toybox.Time;
+import Toybox.Time.Gregorian;
 
 class PadelScoreBoardView extends WatchUi.View {
 
@@ -44,7 +47,18 @@ class PadelScoreBoardView extends WatchUi.View {
         // Column widths: Score | Player | Player | Games | Sets
         var colWidths = [40, 30, 30, 20, 20];
         var rowHeight = tableHeight / 2;
+
+        // Display battery level
+        var battLevel = System.getSystemStats().battery;
+        var battStr = Lang.format( "$1$%", [ battLevel.format( "%2d" ) ] );
+        dc.drawText(20, 5, Graphics.FONT_SMALL, battStr, Graphics.TEXT_JUSTIFY_LEFT);
+
+        // Display current time
+        var today = Gregorian.info(Time.now(), Time.FORMAT_MEDIUM);
+        var timeStr = Lang.format("$1$:$2$", [today.hour.format("%2d"), today.min.format("%2d")]);
+        dc.drawText(95, 5, Graphics.FONT_SMALL, timeStr, Graphics.TEXT_JUSTIFY_RIGHT);
         
+        // Display last score message
         if (gameState.lastScoreMessage != "") {
             dc.drawText(10, 50, Graphics.FONT_MEDIUM, gameState.lastScoreMessage, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
         }
@@ -71,23 +85,23 @@ class PadelScoreBoardView extends WatchUi.View {
         
         // Score
         var topScore = gameState.getScoreString(gameState.topTeamScore);
-        dc.drawText(x + colWidths[0]/2, row1Y, Graphics.FONT_TINY, topScore, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.drawText(x + colWidths[0]/2, row1Y, Graphics.FONT_SMALL, topScore, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
         x = x + colWidths[0];
         
         // Player left (position 2 = top-left)
-        dc.drawText(x + colWidths[1]/2, row1Y, Graphics.FONT_TINY, "P" + positions[2], Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.drawText(x + colWidths[1]/2, row1Y, Graphics.FONT_SMALL, "P" + positions[2], Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
         x = x + colWidths[1];
         
         // Player right (position 3 = top-right)
-        dc.drawText(x + colWidths[2]/2, row1Y, Graphics.FONT_TINY, "P" + positions[3], Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.drawText(x + colWidths[2]/2, row1Y, Graphics.FONT_SMALL, "P" + positions[3], Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
         x = x + colWidths[2];
         
         // Games won
-        dc.drawText(x + colWidths[3]/2, row1Y, Graphics.FONT_TINY, gameState.topTeamGames.toString(), Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.drawText(x + colWidths[3]/2, row1Y, Graphics.FONT_SMALL, gameState.topTeamGames.toString(), Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
         x = x + colWidths[3];
         
         // Sets won
-        dc.drawText(x + colWidths[4]/2, row1Y, Graphics.FONT_TINY, gameState.topTeamSets.toString(), Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.drawText(x + colWidths[4]/2, row1Y, Graphics.FONT_SMALL, gameState.topTeamSets.toString(), Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
         
         // Row 2: Bottom Team (P1 and P2)
         var row2Y = tableY + rowHeight + rowHeight / 2;
@@ -95,23 +109,23 @@ class PadelScoreBoardView extends WatchUi.View {
         
         // Score
         var bottomScore = gameState.getScoreString(gameState.bottomTeamScore);
-        dc.drawText(x + colWidths[0]/2, row2Y, Graphics.FONT_TINY, bottomScore, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.drawText(x + colWidths[0]/2, row2Y, Graphics.FONT_SMALL, bottomScore, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
         x = x + colWidths[0];
         
         // Player left (position 0 = bottom-left)
-        dc.drawText(x + colWidths[1]/2, row2Y, Graphics.FONT_TINY, "P" + positions[0], Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.drawText(x + colWidths[1]/2, row2Y, Graphics.FONT_SMALL, "P" + positions[0], Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
         x = x + colWidths[1];
         
         // Player right (position 1 = bottom-right)
-        dc.drawText(x + colWidths[2]/2, row2Y, Graphics.FONT_TINY, "P" + positions[1], Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.drawText(x + colWidths[2]/2, row2Y, Graphics.FONT_SMALL, "P" + positions[1], Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
         x = x + colWidths[2];
         
         // Games won
-        dc.drawText(x + colWidths[3]/2, row2Y, Graphics.FONT_TINY, gameState.bottomTeamGames.toString(), Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.drawText(x + colWidths[3]/2, row2Y, Graphics.FONT_SMALL, gameState.bottomTeamGames.toString(), Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
         x = x + colWidths[3];
         
         // Sets won
-        dc.drawText(x + colWidths[4]/2, row2Y, Graphics.FONT_TINY, gameState.bottomTeamSets.toString(), Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.drawText(x + colWidths[4]/2, row2Y, Graphics.FONT_SMALL, gameState.bottomTeamSets.toString(), Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
         
         // Display current server in top right
         dc.drawText(width - 25, 25, Graphics.FONT_LARGE, "P" + gameState.currentServer, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);

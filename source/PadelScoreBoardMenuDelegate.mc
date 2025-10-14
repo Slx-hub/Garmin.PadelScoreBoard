@@ -16,6 +16,9 @@ class PadelScoreBoardMenuDelegate extends WatchUi.MenuInputDelegate {
             var delegate = app.getDelegate() as PadelScoreBoardDelegate;
             delegate.getGameState().reset();
             WatchUi.requestUpdate();
+        } else if (item == :exit_app) {
+            System.println("Exit App");
+            WatchUi.popView(WatchUi.SLIDE_IMMEDIATE);
         }
     }
 
