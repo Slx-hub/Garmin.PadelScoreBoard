@@ -3,6 +3,8 @@ import Toybox.System;
 import Toybox.Attention;
 
 class GameState {
+    // Snapshot for undo
+    var snapshot as Dictionary = {};
     // Message to display after scoring
     var lastScoreMessage as String = "";
     // Player positions: [bottom-left, bottom-right, top-left, top-right]
@@ -116,6 +118,7 @@ class GameState {
     
     // Add point to bottom team
     function addPointBottomTeam() as Void {
+    saveSnapshot();
         var servingTeamScored = isBottomTeamServing();
         lastScoreMessage = "T1 Scored";
         
@@ -150,6 +153,7 @@ class GameState {
     
     // Add point to top team
     function addPointTopTeam() as Void {
+        saveSnapshot();
         var servingTeamScored = isTopTeam(currentServer);
         lastScoreMessage = "T2 Scored";
         
@@ -213,5 +217,45 @@ class GameState {
         if (score == 3) { return "40"; }
         if (score == 4) { return "ADV"; }
         return "0";
+    }
+
+        // Save snapshot of all variables
+    function saveSnapshot() as Void {
+        snapshot = {
+            :lastScoreMessage => lastScoreMessage,
+            :playerPositions => cloneArray(playerPositions),
+            :currentServer => currentServer,
+            :lastServer => lastServer,
+            :bottomTeamScore => bottomTeamScore,
+            :topTeamScore => topTeamScore,
+            :bottomTeamGames => bottomTeamGames,
+            :topTeamGames => topTeamGames,
+            :bottomTeamSets => bottomTeamSets,
+            :topTeamSets => topTeamSets
+        };
+    }
+    // Restore snapshot for undo
+    function restoreSnapshot() as Void {
+        if (snapshot != null) {
+            lastScoreMessage = snapshot[:lastScoreMessage];
+            playerPositions = cloneArray(snapshot[:playerPositions]);
+            currentServer = snapshot[:currentServer];
+            lastServer = snapshot[:lastServer];
+            bottomTeamScore = snapshot[:bottomTeamScore];
+            topTeamScore = snapshot[:topTeamScore];
+            bottomTeamGames = snapshot[:bottomTeamGames];
+            topTeamGames = snapshot[:topTeamGames];
+            bottomTeamSets = snapshot[:bottomTeamSets];
+            topTeamSets = snapshot[:topTeamSets];
+            Attention.playTone({:toneProfile=>TEAM_SWAP_SOUND});
+        }
+    }
+
+    function cloneArray(arr as Array<Number>) as Array<Number> {
+        var newArr = [];
+        for (var i = 0; i < arr.size(); i = i + 1) {
+            newArr.add(arr[i]);
+        }
+        return newArr;
     }
 }

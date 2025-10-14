@@ -1,6 +1,7 @@
 <strings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://developer.garmin.com/downloads/connect-iq/resources.xsd">
     <string id="AppName">PadelScoreBoard</string>
 
+    <string id="undo_label">Undo</string>
     <string id="reset_score_label">Reset Score</string>
     <string id="exit_label">Exit App</string>
 </strings>

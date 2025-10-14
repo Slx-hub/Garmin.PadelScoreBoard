@@ -10,7 +10,13 @@ class PadelScoreBoardMenuDelegate extends WatchUi.MenuInputDelegate {
     }
 
     function onMenuItem(item as Symbol) as Void {
-        if (item == :reset_score) {
+        if (item == :undo) {
+            System.println("Undo");
+            var app = Application.getApp() as PadelScoreBoardApp;
+            var delegate = app.getDelegate() as PadelScoreBoardDelegate;
+            delegate.getGameState().restoreSnapshot();
+            WatchUi.requestUpdate();
+        } else if (item == :reset_score) {
             System.println("Reset Score");
             var app = Application.getApp() as PadelScoreBoardApp;
             var delegate = app.getDelegate() as PadelScoreBoardDelegate;
