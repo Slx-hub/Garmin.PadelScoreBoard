@@ -76,10 +76,10 @@ const PLAYER_SWAP_SOUND = [
 
 
 const TEAM_SWAP_SOUND = [
-    new Attention.ToneProfile(NOTE_G4, 200),
-    new Attention.ToneProfile(PAUSE, 20),
-    new Attention.ToneProfile(NOTE_G4, 200),
-    new Attention.ToneProfile(NOTE_E4, 300),
+    new Attention.ToneProfile(NOTE_G5, 200),
+    new Attention.ToneProfile(PAUSE, 10),
+    new Attention.ToneProfile(NOTE_G5, 200),
+    new Attention.ToneProfile(NOTE_E5, 300),
 ];
 
 const TEAM_WIN_SOUND = [
