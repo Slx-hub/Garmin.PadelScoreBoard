@@ -50,12 +50,12 @@ class PadelScoreBoardView extends WatchUi.View {
 
         // Display battery level
         var battLevel = System.getSystemStats().battery;
-        var battStr = Lang.format( "$1$%", [ battLevel.format( "%2d" ) ] );
+        var battStr = Lang.format( "$1$%", [ battLevel.format( "%02d" ) ] );
         dc.drawText(20, 5, Graphics.FONT_SMALL, battStr, Graphics.TEXT_JUSTIFY_LEFT);
 
         // Display current time
         var today = Gregorian.info(Time.now(), Time.FORMAT_MEDIUM);
-        var timeStr = Lang.format("$1$:$2$", [today.hour.format("%2d"), today.min.format("%2d")]);
+        var timeStr = Lang.format("$1$:$2$", [today.hour.format("%02d"), today.min.format("%02d")]);
         dc.drawText(95, 5, Graphics.FONT_SMALL, timeStr, Graphics.TEXT_JUSTIFY_RIGHT);
         
         // Display last score message
