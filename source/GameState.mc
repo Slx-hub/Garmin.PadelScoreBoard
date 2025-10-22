@@ -10,15 +10,22 @@ class GameState {
     // Player positions: [bottom-left, bottom-right, top-left, top-right]
     var playerPositions as Array<Number> = [];
     
-    // Current server (player number 1-4)
+    // Current server (array index 0-3)
     var currentServer as Number = 0;
     
-    // Last server (player number 1-4)
+    // Last server (array index 0-3)
     var lastServer as Number = 0;
     
+    // Display name mode
+    var useRegularNames as Boolean = true;
+    
+    // Display name arrays (indexed by player ID 0-3)
+    var genericNames as Array<String> = ["P1", "P2", "P3", "P4"];
+    var regularNames as Array<String> = ["J", "M", "D", "P"];
+    
     // Team scores: 0=0pts, 1=15pts, 2=30pts, 3=40pts, 4=advantage
-    var bottomTeamScore as Number = 0;  // Team with P1 and P2
-    var topTeamScore as Number = 0;     // Team with P3 and P4
+    var bottomTeamScore as Number = 0;  // Team with indices 0-1
+    var topTeamScore as Number = 0;     // Team with indices 2-3
     
     // Games and sets won
     var bottomTeamGames as Number = 0;
@@ -31,11 +38,11 @@ class GameState {
     }
     
     function reset() as Void {
-        // Initial positions: [P1, P2, P3, P4]
-        playerPositions = [1, 2, 3, 4];
+        // Initial positions: [P1, P2, P3, P4] (using 0-based indices)
+        playerPositions = [0, 1, 2, 3];
         lastScoreMessage = "";
         
-        // Start with P2 serving
+        // Start with P2 serving (index 1 = bottom-right position)
         currentServer = 1;
         lastServer = 1;
         
@@ -49,15 +56,46 @@ class GameState {
         
         Attention.playTone(Attention.TONE_RESET);
     }
-    
-    // Check if a player is on the bottom team
-    function isBottomTeam(playerNum as Number) as Boolean {
-        return (playerNum == 1 || playerNum == 2);
+
+    function rotatePlayers() {
+        var insertPlayer = playerPositions[3]; // defo not player 1
+        var tempPlayer = 0;
+
+        for (var i = 0; i <= 3; i++) {
+            if (playerPositions[i] == 0) {
+                continue;
+            }
+            tempPlayer = playerPositions[i];
+            playerPositions[i] = insertPlayer;
+            insertPlayer = tempPlayer;
+        }
+        
+        Attention.playTone({:toneProfile=>PLAYER_SWAP_SOUND});
     }
     
-    // Check if a player is on the top team
-    function isTopTeam(playerNum as Number) as Boolean {
-        return (playerNum == 3 || playerNum == 4);
+    // Get display name for a player ID
+    function getPlayerDisplayName(playerId as Number) as String {
+        if (useRegularNames) {
+            return regularNames[playerId];
+        } else {
+            return genericNames[playerId];
+        }
+    }
+    
+    // Toggle between regular and generic player names
+    function toggleRegularNames() as Void {
+        useRegularNames = !useRegularNames;
+        Attention.playTone({:toneProfile=>TEAM_SWAP_SOUND});
+    }
+    
+    // Check if a position index is on the bottom team
+    function isBottomTeam(positionIndex as Number) as Boolean {
+        return (positionIndex == 0 || positionIndex == 1);
+    }
+    
+    // Check if a position index is on the top team
+    function isTopTeam(positionIndex as Number) as Boolean {
+        return (positionIndex == 2 || positionIndex == 3);
     }
     
     // Check if current server is on bottom team
@@ -65,12 +103,12 @@ class GameState {
         return isBottomTeam(currentServer);
     }
 
-    // Get the other player on the same team as the given player
-    function getTeammate(playerNum as Number) as Number {
-        if (playerNum == 1) { return 2; }
-        if (playerNum == 2) { return 1; }
-        if (playerNum == 3) { return 4; }
-        if (playerNum == 4) { return 3; }
+    // Get the other player index on the same team as the given position index
+    function getTeammate(positionIndex as Number) as Number {
+        if (positionIndex == 0) { return 1; }  // bottom-left -> bottom-right
+        if (positionIndex == 1) { return 0; }  // bottom-right -> bottom-left
+        if (positionIndex == 2) { return 3; }  // top-left -> top-right
+        if (positionIndex == 3) { return 2; }  // top-right -> top-left
         return 0;
     }
     
@@ -96,17 +134,17 @@ class GameState {
 
         if (isBottomTeamServing()) {
             // Switch to top team
-            if (lastServer == 3) {
-                currentServer = 4;
-            } else {
+            if (lastServer == 2) {
                 currentServer = 3;
+            } else {
+                currentServer = 2;
             }
         } else {
             // Switch to bottom team
-            if (lastServer == 1) {
-                currentServer = 2;
-            } else {
+            if (lastServer == 0) {
                 currentServer = 1;
+            } else {
+                currentServer = 0;
             }
         }
         lastServer = tempserver;
@@ -120,17 +158,17 @@ class GameState {
 
         if (hasBottomTeamWon) {
             // Switch to top team
-            if (lastServer == 3 || currentServer == 3) {
-                currentServer = 4;
-            } else {
+            if (lastServer == 2 || currentServer == 2) {
                 currentServer = 3;
+            } else {
+                currentServer = 2;
             }
         } else {
             // Switch to bottom team
-            if (lastServer == 1 || currentServer == 1) {
-                currentServer = 2;
-            } else {
+            if (lastServer == 0 || currentServer == 0) {
                 currentServer = 1;
+            } else {
+                currentServer = 0;
             }
         }
         lastServer = tempserver;
@@ -140,7 +178,7 @@ class GameState {
     function addPointBottomTeam() as Void {
     saveSnapshot();
         var servingTeamScored = isBottomTeamServing();
-        lastScoreMessage = "T1 Scored";
+        lastScoreMessage = "Bot Scored";
         
         // Update score
         if (bottomTeamScore == 3 && topTeamScore >= 3) {
@@ -156,7 +194,7 @@ class GameState {
             // Bottom team wins the game
             bottomTeamGames = bottomTeamGames + 1;
             System.println("Bottom team wins game! Games: " + bottomTeamGames);
-            lastScoreMessage = "T1 Won";
+            lastScoreMessage = "Bot Won";
             teamWinsGame(true);
             return;
         } else {
@@ -175,7 +213,7 @@ class GameState {
     function addPointTopTeam() as Void {
         saveSnapshot();
         var servingTeamScored = isTopTeam(currentServer);
-        lastScoreMessage = "T2 Scored";
+        lastScoreMessage = "Top Scored";
         
         // Update score
         if (topTeamScore == 3 && bottomTeamScore >= 3) {
@@ -191,7 +229,7 @@ class GameState {
             // Top team wins the game
             topTeamGames = topTeamGames + 1;
             System.println("Top team wins game! Games: " + topTeamGames);
-            lastScoreMessage = "T2 Won";
+            lastScoreMessage = "Top Won";
             teamWinsGame(false);
             return;
         } else {
@@ -219,11 +257,13 @@ class GameState {
         if (bottomTeamGames >= 6 && bottomTeamGames >= topTeamGames + 2) {
             bottomTeamSets = bottomTeamSets + 1;
             System.println("Bottom team wins set! Sets: " + bottomTeamSets);
+            lastScoreMessage = "Bot Settled";
             bottomTeamGames = 0;
             topTeamGames = 0;
         } else if (topTeamGames >= 6 && topTeamGames >= bottomTeamGames + 2) {
             topTeamSets = topTeamSets + 1;
             System.println("Top team wins set! Sets: " + topTeamSets);
+            lastScoreMessage = "Top Settled";
             bottomTeamGames = 0;
             topTeamGames = 0;
         }

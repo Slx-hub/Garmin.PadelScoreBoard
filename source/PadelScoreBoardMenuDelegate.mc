@@ -16,17 +16,17 @@ class PadelScoreBoardMenuDelegate extends WatchUi.MenuInputDelegate {
             var delegate = app.getDelegate() as PadelScoreBoardDelegate;
             delegate.getGameState().restoreSnapshot();
             WatchUi.requestUpdate();
-        } else if (item == :rotate_players) {
-            System.println("Rotate Players");
-            var app = Application.getApp() as PadelScoreBoardApp;
-            var delegate = app.getDelegate() as PadelScoreBoardDelegate;
-            delegate.getGameState().rotate_players();
-            WatchUi.requestUpdate();
         } else if (item == :reset_score) {
             System.println("Reset Score");
             var app = Application.getApp() as PadelScoreBoardApp;
             var delegate = app.getDelegate() as PadelScoreBoardDelegate;
             delegate.getGameState().reset();
+            WatchUi.requestUpdate();
+        } else if (item == :toggle_regulars) {
+            System.println("Toggle Regulars");
+            var app = Application.getApp() as PadelScoreBoardApp;
+            var delegate = app.getDelegate() as PadelScoreBoardDelegate;
+            delegate.getGameState().toggleRegularNames();
             WatchUi.requestUpdate();
         } else if (item == :exit_app) {
             System.println("Exit App");

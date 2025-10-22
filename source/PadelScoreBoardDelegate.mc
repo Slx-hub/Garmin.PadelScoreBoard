@@ -21,8 +21,8 @@ class PadelScoreBoardDelegate extends WatchUi.BehaviorDelegate {
     }
 
     function onNextPage() as Boolean {
-        System.println("Button pressed: DOWN");
-        PadelScoreBoardView.lastButtonName = "DOWN";
+        System.println("Button pressed: DOWN - Rotate players");
+        gameState.rotatePlayers();
         WatchUi.requestUpdate();
         return true;
     }

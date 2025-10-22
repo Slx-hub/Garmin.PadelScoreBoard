@@ -89,11 +89,11 @@ class PadelScoreBoardView extends WatchUi.View {
         x = x + colWidths[0];
         
         // Player left (position 2 = top-left)
-        dc.drawText(x + colWidths[1]/2, row1Y, Graphics.FONT_SMALL, "P" + positions[2], Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.drawText(x + colWidths[1]/2, row1Y, Graphics.FONT_SMALL, gameState.getPlayerDisplayName(positions[2]), Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
         x = x + colWidths[1];
         
         // Player right (position 3 = top-right)
-        dc.drawText(x + colWidths[2]/2, row1Y, Graphics.FONT_SMALL, "P" + positions[3], Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.drawText(x + colWidths[2]/2, row1Y, Graphics.FONT_SMALL, gameState.getPlayerDisplayName(positions[3]), Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
         x = x + colWidths[2];
         
         // Games won
@@ -113,11 +113,11 @@ class PadelScoreBoardView extends WatchUi.View {
         x = x + colWidths[0];
         
         // Player left (position 0 = bottom-left)
-        dc.drawText(x + colWidths[1]/2, row2Y, Graphics.FONT_SMALL, "P" + positions[0], Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.drawText(x + colWidths[1]/2, row2Y, Graphics.FONT_SMALL, gameState.getPlayerDisplayName(positions[0]), Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
         x = x + colWidths[1];
         
         // Player right (position 1 = bottom-right)
-        dc.drawText(x + colWidths[2]/2, row2Y, Graphics.FONT_SMALL, "P" + positions[1], Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.drawText(x + colWidths[2]/2, row2Y, Graphics.FONT_SMALL, gameState.getPlayerDisplayName(positions[1]), Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
         x = x + colWidths[2];
         
         // Games won
@@ -127,8 +127,9 @@ class PadelScoreBoardView extends WatchUi.View {
         // Sets won
         dc.drawText(x + colWidths[4]/2, row2Y, Graphics.FONT_SMALL, gameState.bottomTeamSets.toString(), Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
         
-        // Display current server in top right
-        dc.drawText(width - 25, 25, Graphics.FONT_LARGE, "P" + gameState.currentServer, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        // Display current server in top right (get player ID from position)
+        var serverPlayerId = gameState.playerPositions[gameState.currentServer];
+        dc.drawText(width - 25, 25, Graphics.FONT_LARGE, gameState.getPlayerDisplayName(serverPlayerId), Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
     }
     
     // Static variable to hold last button name
