@@ -8,6 +8,23 @@ import Toybox.Time.Gregorian;
 class PadelScoreBoardView extends WatchUi.View {
 
     private var tableBg as Graphics.BitmapReference or Null = null;
+    
+    // Static UI constants
+    private static const MARGIN = 8;
+    private static const TABLE_HEIGHT = 60;
+    private static const TABLE_Y = 80;
+    private static const PLAYER_OFFSET_Y = 5;
+    private static const COL_WIDTHS = [40, 30, 30, 20, 20];
+    private static const BATTERY_BOX_WIDTH = 120;
+    private static const BATTERY_BOX_HEIGHT = 20;
+    private static const BATTERY_TEXT_X = 25;
+    private static const TIME_TEXT_X = 95;
+    private static const SCORE_MESSAGE_X = 12;
+    private static const SCORE_MESSAGE_Y = 52;
+    private static const SERVER_CENTER_X_OFFSET = 27;
+    private static const SERVER_CENTER_Y = 26;
+    private static const SERVER_RADIUS = 30;
+    private static const TABLE_BG_Y_OFFSET = 20;
 
     function initialize() {
         View.initialize();
@@ -28,8 +45,6 @@ class PadelScoreBoardView extends WatchUi.View {
 
     // Update the view
     function onUpdate(dc as Dc) as Void {
-        System.println("Updating View");
-
         var app = Application.getApp() as PadelScoreBoardApp;
         var delegate = app.getDelegate();
         var gameState = delegate.getGameState();
@@ -41,138 +56,113 @@ class PadelScoreBoardView extends WatchUi.View {
         dc.clear();
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
         
-        // Define table dimensions
-        var margin = 8;
-        var tableHeight = 60;
-        var tableX = margin;
-        var tableY = 80;
-        var playerOffsetY = 5;
-        
-        // Column widths: Score | Player | Player | Games | Sets
-        var colWidths = [40, 30, 30, 20, 20];
-        var rowHeight = tableHeight / 2;
+        var tableX = MARGIN;
+        var rowHeight = TABLE_HEIGHT / 2;
 
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_WHITE);
-
-        dc.fillRectangle(0, 0, 120, 20);  // Background box
+        dc.fillRectangle(0, 0, BATTERY_BOX_WIDTH, BATTERY_BOX_HEIGHT);
 
         dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_TRANSPARENT);
 
         // Display battery level
         var battLevel = System.getSystemStats().battery;
         var battStr = Lang.format( "$1$%", [ battLevel.format( "%02d" ) ] );
-        dc.drawText(25, 0, Graphics.FONT_SMALL, battStr, Graphics.TEXT_JUSTIFY_LEFT);
+        dc.drawText(BATTERY_TEXT_X, 0, Graphics.FONT_SMALL, battStr, Graphics.TEXT_JUSTIFY_LEFT);
 
         // Display current time
         var today = Gregorian.info(Time.now(), Time.FORMAT_MEDIUM);
         var timeStr = Lang.format("$1$:$2$", [today.hour.format("%02d"), today.min.format("%02d")]);
-        dc.drawText(95, 0, Graphics.FONT_SMALL, timeStr, Graphics.TEXT_JUSTIFY_RIGHT);
+        dc.drawText(TIME_TEXT_X, 0, Graphics.FONT_SMALL, timeStr, Graphics.TEXT_JUSTIFY_RIGHT);
         
         // Draw table background image
         if (tableBg != null) {
-            dc.drawBitmap(tableX, tableY - 20, tableBg);
+            dc.drawBitmap(tableX, TABLE_Y - TABLE_BG_Y_OFFSET, tableBg);
         }
-
-        // Draw table borders
-        //var tableWidth = 40 + 30 + 30 + 20 + 20;
-        //dc.drawRectangle(tableX, tableY, tableWidth, tableHeight);
-        //dc.drawLine(tableX, tableY + rowHeight, tableX + tableWidth, tableY + rowHeight);
-        
-        // Draw column lines
-        //var x = tableX;
-        //for (var i = 0; i < colWidths.size(); i++) {
-        //    x = x + colWidths[i];
-        //    if (i < colWidths.size() - 1) {
-        //        dc.drawLine(x, tableY, x, tableY + tableHeight);
-        //    }
-        //}
 
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
 
         // Display last score message
         if (gameState.lastScoreMessage != "") {
-            dc.drawText(12, 52, Graphics.FONT_MEDIUM, gameState.lastScoreMessage, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+            dc.drawText(SCORE_MESSAGE_X, SCORE_MESSAGE_Y, Graphics.FONT_MEDIUM, gameState.lastScoreMessage, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
         }
         
         // Get player positions
         var positions = gameState.playerPositions;
         
         // Row 1: Top Team (P3 and P4)
-        var row1Y = tableY + rowHeight / 2;
+        var row1Y = TABLE_Y + rowHeight / 2;
         var x = tableX;
         
         // Score
         var topScore = gameState.getScoreString(gameState.topTeamScore);
-        dc.drawText(x + colWidths[0]/2, row1Y, Graphics.FONT_SMALL, topScore, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
-        x = x + colWidths[0];
+        dc.drawText(x + COL_WIDTHS[0]/2, row1Y, Graphics.FONT_SMALL, topScore, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        x = x + COL_WIDTHS[0];
         
         dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_TRANSPARENT);
 
         // Player left (position 2 = top-left)
-        dc.drawText(x + colWidths[1]/2, row1Y - playerOffsetY, Graphics.FONT_MEDIUM, gameState.getPlayerDisplayName(positions[2]), Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
-        x = x + colWidths[1];
+        dc.drawText(x + COL_WIDTHS[1]/2, row1Y - PLAYER_OFFSET_Y, Graphics.FONT_MEDIUM, gameState.getPlayerDisplayName(positions[2]), Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        x = x + COL_WIDTHS[1];
         
         // Player right (position 3 = top-right)
-        dc.drawText(x + colWidths[2]/2, row1Y - playerOffsetY, Graphics.FONT_MEDIUM, gameState.getPlayerDisplayName(positions[3]), Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
-        x = x + colWidths[2];
+        dc.drawText(x + COL_WIDTHS[2]/2, row1Y - PLAYER_OFFSET_Y, Graphics.FONT_MEDIUM, gameState.getPlayerDisplayName(positions[3]), Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        x = x + COL_WIDTHS[2];
         
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
 
         // Games won
-        dc.drawText(x + colWidths[3]/2, row1Y, Graphics.FONT_SMALL, gameState.topTeamGames.toString(), Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
-        x = x + colWidths[3];
+        dc.drawText(x + COL_WIDTHS[3]/2, row1Y, Graphics.FONT_SMALL, gameState.topTeamGames.toString(), Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        x = x + COL_WIDTHS[3];
         
         dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_TRANSPARENT);
 
         // Sets won
-        dc.drawText(x + colWidths[4]/2, row1Y, Graphics.FONT_SMALL, gameState.topTeamSets.toString(), Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.drawText(x + COL_WIDTHS[4]/2, row1Y, Graphics.FONT_SMALL, gameState.topTeamSets.toString(), Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
         
         // Row 2: Bottom Team (P1 and P2)
-        var row2Y = tableY + rowHeight + rowHeight / 2;
+        var row2Y = TABLE_Y + rowHeight + rowHeight / 2;
         x = tableX;
         
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
         
         // Score
         var bottomScore = gameState.getScoreString(gameState.bottomTeamScore);
-        dc.drawText(x + colWidths[0]/2, row2Y, Graphics.FONT_SMALL, bottomScore, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
-        x = x + colWidths[0];
+        dc.drawText(x + COL_WIDTHS[0]/2, row2Y, Graphics.FONT_SMALL, bottomScore, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        x = x + COL_WIDTHS[0];
         
         dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_TRANSPARENT);
         
         // Player left (position 0 = bottom-left)
-        dc.drawText(x + colWidths[1]/2, row2Y + playerOffsetY, Graphics.FONT_MEDIUM, gameState.getPlayerDisplayName(positions[0]), Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
-        x = x + colWidths[1];
+        dc.drawText(x + COL_WIDTHS[1]/2, row2Y + PLAYER_OFFSET_Y, Graphics.FONT_MEDIUM, gameState.getPlayerDisplayName(positions[0]), Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        x = x + COL_WIDTHS[1];
         
         // Player right (position 1 = bottom-right)
-        dc.drawText(x + colWidths[2]/2, row2Y + playerOffsetY, Graphics.FONT_MEDIUM, gameState.getPlayerDisplayName(positions[1]), Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
-        x = x + colWidths[2];
+        dc.drawText(x + COL_WIDTHS[2]/2, row2Y + PLAYER_OFFSET_Y, Graphics.FONT_MEDIUM, gameState.getPlayerDisplayName(positions[1]), Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        x = x + COL_WIDTHS[2];
         
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
 
         // Games won
-        dc.drawText(x + colWidths[3]/2, row2Y, Graphics.FONT_SMALL, gameState.bottomTeamGames.toString(), Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
-        x = x + colWidths[3];
+        dc.drawText(x + COL_WIDTHS[3]/2, row2Y, Graphics.FONT_SMALL, gameState.bottomTeamGames.toString(), Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        x = x + COL_WIDTHS[3];
         
         dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_TRANSPARENT);
 
         // Sets won
-        dc.drawText(x + colWidths[4]/2, row2Y, Graphics.FONT_SMALL, gameState.bottomTeamSets.toString(), Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.drawText(x + COL_WIDTHS[4]/2, row2Y, Graphics.FONT_SMALL, gameState.bottomTeamSets.toString(), Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
         
         // Display current server in top right (get player ID from position)
         var serverPlayerId = gameState.playerPositions[gameState.currentServer];
         var serverName = gameState.getPlayerDisplayName(serverPlayerId);
-        var serverCenterX = width - 27;
-        var serverCenterY = 26;
-        var serverRadius = 30;
+        var serverCenterX = width - SERVER_CENTER_X_OFFSET;
         
         // Draw filled circle with inverted colors
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_WHITE);
-        dc.fillCircle(serverCenterX, serverCenterY, serverRadius);
+        dc.fillCircle(serverCenterX, SERVER_CENTER_Y, SERVER_RADIUS);
         
-        // Draw text in white on black background
+        // Draw text in black on white background
         dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_TRANSPARENT);
-        dc.drawText(serverCenterX, serverCenterY, Graphics.FONT_LARGE, serverName, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.drawText(serverCenterX, SERVER_CENTER_Y, Graphics.FONT_LARGE, serverName, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
         
         // Reset colors
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
