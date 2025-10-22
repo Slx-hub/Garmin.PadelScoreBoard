@@ -2,6 +2,7 @@
     <string id="AppName">Padel Caddy</string>
 
     <string id="undo_label">Undo</string>
+    <string id="rotate_players_label">Rotate Players</string>
     <string id="reset_score_label">Reset Score</string>
     <string id="exit_label">Exit App</string>
 </strings>

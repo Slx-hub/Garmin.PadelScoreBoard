@@ -32,7 +32,7 @@ class GameState {
     
     function reset() as Void {
         // Initial positions: [P1, P2, P3, P4]
-        playerPositions = [2, 1, 3, 4];
+        playerPositions = [1, 2, 3, 4];
         lastScoreMessage = "";
         
         // Start with P2 serving
@@ -91,8 +91,7 @@ class GameState {
     }
     
     // Switch serve to the other team
-    function switchServingTeam(silent as Boolean) as Void {
-        // Find who on the other team hasn't served last
+    function switchServingTeam() as Void {
         var tempserver = currentServer;
 
         if (isBottomTeamServing()) {
@@ -111,9 +110,30 @@ class GameState {
             }
         }
         lastServer = tempserver;
-        if (!silent) {
-            Attention.playTone({:toneProfile=>TEAM_SWAP_SOUND});
+        Attention.playTone({:toneProfile=>TEAM_SWAP_SOUND});
+    }
+
+        
+    // Switch serve to the losing team
+    function switchServeToLosingTeam(hasBottomTeamWon as Boolean) as Void {
+        var tempserver = currentServer;
+
+        if (hasBottomTeamWon) {
+            // Switch to top team
+            if (lastServer == 3 || currentServer == 3) {
+                currentServer = 4;
+            } else {
+                currentServer = 3;
+            }
+        } else {
+            // Switch to bottom team
+            if (lastServer == 1 || currentServer == 1) {
+                currentServer = 2;
+            } else {
+                currentServer = 1;
+            }
         }
+        lastServer = tempserver;
     }
     
     // Add point to bottom team
@@ -137,7 +157,7 @@ class GameState {
             bottomTeamGames = bottomTeamGames + 1;
             System.println("Bottom team wins game! Games: " + bottomTeamGames);
             lastScoreMessage = "T1 Won";
-            teamWinsGame();
+            teamWinsGame(true);
             return;
         } else {
             bottomTeamScore = bottomTeamScore + 1;
@@ -172,7 +192,7 @@ class GameState {
             topTeamGames = topTeamGames + 1;
             System.println("Top team wins game! Games: " + topTeamGames);
             lastScoreMessage = "T2 Won";
-            teamWinsGame();
+            teamWinsGame(false);
             return;
         } else {
             topTeamScore = topTeamScore + 1;
@@ -186,11 +206,11 @@ class GameState {
         }
     }
 
-    function teamWinsGame() as Void{
+    function teamWinsGame(hasBottomTeamWon as Boolean) as Void {
         checkSetWin();
         bottomTeamScore = 0;
         topTeamScore = 0;
-        switchServingTeam(true);
+        switchServeToLosingTeam(hasBottomTeamWon);
         Attention.playTone({:toneProfile=>TEAM_WIN_SOUND});
     }
     
