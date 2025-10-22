@@ -119,11 +119,13 @@ class GameState {
             var temp = playerPositions[0];
             playerPositions[0] = playerPositions[1];
             playerPositions[1] = temp;
+            currentServer = 1 - currentServer;
         } else {
             // Swap P3 and P4 positions
             var temp = playerPositions[2];
             playerPositions[2] = playerPositions[3];
             playerPositions[3] = temp;
+            currentServer = 5 - currentServer;
         }
         Attention.playTone({:toneProfile=>PLAYER_SWAP_SOUND});
     }
@@ -205,7 +207,7 @@ class GameState {
         if (servingTeamScored) {
             switchServingTeamPositions();
         } else {
-            switchServingTeam(false);
+            switchServingTeam();
         }
     }
     
@@ -240,7 +242,7 @@ class GameState {
         if (servingTeamScored) {
             switchServingTeamPositions();
         } else {
-            switchServingTeam(false);
+            switchServingTeam();
         }
     }
 
